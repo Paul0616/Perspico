@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4007D32322E991DD00A7DEEA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4007D32222E991DD00A7DEEA /* Settings.swift */; };
 		DAB53CA922E86D110072074A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB53CA822E86D110072074A /* AppDelegate.swift */; };
-		DAB53CAB22E86D110072074A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = DAB53CAA22E86D110072074A /* GameScene.sks */; };
-		DAB53CAD22E86D110072074A /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = DAB53CAC22E86D110072074A /* Actions.sks */; };
 		DAB53CAF22E86D110072074A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB53CAE22E86D110072074A /* GameScene.swift */; };
 		DAB53CB122E86D110072074A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB53CB022E86D110072074A /* GameViewController.swift */; };
 		DAB53CB422E86D110072074A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DAB53CB222E86D110072074A /* Main.storyboard */; };
@@ -18,10 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4007D32222E991DD00A7DEEA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		DAB53CA522E86D100072074A /* Perspico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Perspico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAB53CA822E86D110072074A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DAB53CAA22E86D110072074A /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		DAB53CAC22E86D110072074A /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		DAB53CAE22E86D110072074A /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		DAB53CB022E86D110072074A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		DAB53CB322E86D110072074A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -41,6 +39,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4007D31D22E9869E00A7DEEA /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				DAB53CAE22E86D110072074A /* GameScene.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		4007D31E22E986AD00A7DEEA /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				DAB53CB022E86D110072074A /* GameViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		4007D32122E991C300A7DEEA /* Template */ = {
+			isa = PBXGroup;
+			children = (
+				DAB53CA822E86D110072074A /* AppDelegate.swift */,
+				4007D32222E991DD00A7DEEA /* Settings.swift */,
+			);
+			path = Template;
+			sourceTree = "<group>";
+		};
 		DAB53C9C22E86D100072074A = {
 			isa = PBXGroup;
 			children = (
@@ -60,15 +83,13 @@
 		DAB53CA722E86D100072074A /* Perspico */ = {
 			isa = PBXGroup;
 			children = (
-				DAB53CA822E86D110072074A /* AppDelegate.swift */,
-				DAB53CAA22E86D110072074A /* GameScene.sks */,
-				DAB53CAC22E86D110072074A /* Actions.sks */,
-				DAB53CAE22E86D110072074A /* GameScene.swift */,
-				DAB53CB022E86D110072074A /* GameViewController.swift */,
+				4007D32122E991C300A7DEEA /* Template */,
+				4007D31E22E986AD00A7DEEA /* Controllers */,
+				4007D31D22E9869E00A7DEEA /* Scenes */,
+				DAB53CBA22E86D120072074A /* Info.plist */,
 				DAB53CB222E86D110072074A /* Main.storyboard */,
 				DAB53CB522E86D120072074A /* Assets.xcassets */,
 				DAB53CB722E86D120072074A /* LaunchScreen.storyboard */,
-				DAB53CBA22E86D120072074A /* Info.plist */,
 			);
 			path = Perspico;
 			sourceTree = "<group>";
@@ -132,10 +153,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DAB53CB422E86D110072074A /* Main.storyboard in Resources */,
-				DAB53CAB22E86D110072074A /* GameScene.sks in Resources */,
 				DAB53CB622E86D120072074A /* Assets.xcassets in Resources */,
 				DAB53CB922E86D120072074A /* LaunchScreen.storyboard in Resources */,
-				DAB53CAD22E86D110072074A /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +167,7 @@
 			files = (
 				DAB53CAF22E86D110072074A /* GameScene.swift in Sources */,
 				DAB53CB122E86D110072074A /* GameViewController.swift in Sources */,
+				4007D32322E991DD00A7DEEA /* Settings.swift in Sources */,
 				DAB53CA922E86D110072074A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
