@@ -17,26 +17,22 @@ class GameScene: SKScene {
     var currentPlayerNodes: [SKShapeNode] = []
     var movableColor: SKShapeNode!
     var currentRow: Int = 0
-    var currentRandomColors: [UIColor] = []
+    var currentRandomColors: [ColorModel] = []
+    var gameOver: Bool = false
+    
    // var boardHorizontalLines:[SKShapeNode]!
     override func didMove(to view: SKView) {
+        backgroundColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
        currentRandomColors = randomColors(number: pinNumber, colors: colors)
        layoutScene()
     }
     
     func layoutScene(){
+        gameOver = false
         createGameBoard()
         createPickColorsSection()
-        
-//        for row in 0..<rounds {
-//            for position in 0..<pinNumber{
-//                createResponse(row: row, position: position, correctPosition: true)
-//            }
-//
-//            let randomCol = randomColors(number: pinNumber, colors: colors)
-            for position in 0..<pinNumber{
-                createPlayerPins(row: 5, position: position, color: currentRandomColors[position])
-            }
+//        for position in 0..<pinNumber{
+//            createPlayerPins(row: 5, position: position, color: currentRandomColors[position].color)
 //        }
         currentPlayerNodes.removeAll()
         for position in 0..<pinNumber{
@@ -44,6 +40,7 @@ class GameScene: SKScene {
                 currentPlayerNodes.append(obj)
             }
         }
+        
     }
     
     func createGameBoard(){
@@ -55,6 +52,7 @@ class GameScene: SKScene {
         board.lineWidth = 2.0
         board.strokeColor = UIColor.white
         addChild(board)
+        
         
         //create inner lines and row labels
         for n in 1...rounds {
@@ -164,17 +162,19 @@ class GameScene: SKScene {
         return boardSize
     }
     
-    func randomColors(number: Int, colors: [UIColor]) -> [UIColor] {
-        guard number > 0 else { return [UIColor]() }
+    func randomColors(number: Int, colors: [UIColor]) -> [ColorModel] {
+        var rand = [ColorModel]()
+        guard number > 0 else { return rand }
         var remaining = colors
-        var chosen = [UIColor]()
+        var names = colorNames
         for _ in 0 ..< number {
             guard !remaining.isEmpty else { break }
             let randomIndex = Int(arc4random_uniform(UInt32(remaining.count)))
-            chosen.append(remaining[randomIndex])
+            rand.append(ColorModel(colorName: names[randomIndex], color: remaining[randomIndex]))
+            names.remove(at: randomIndex)
             remaining.remove(at: randomIndex)
         }
-        return chosen
+        return rand
     }
     
     func checkCurrentNodesIsFilled() -> Bool{
@@ -205,11 +205,15 @@ class GameScene: SKScene {
         var i = 0
         var j = 0
         for nodePlayer in currentPlayerNodes {
+            //print(nodePlayer.name!)
             for nodeRandom in currentRandomColors {
-                if nodePlayer.fillColor == nodeRandom {
+                if nodePlayer.fillColor == nodeRandom.color {
+                    
                     if i == j {
+                        print("\(i) - \(nodeRandom.colorName)")
                        blacks += 1
                     } else {
+                        print("\(nodeRandom.colorName)")
                         whites += 1
                     }
                 }
@@ -217,28 +221,72 @@ class GameScene: SKScene {
             }
             j = 0
             i += 1
-            
         }
+        
         for position in 0..<whites{
             createResponse(row: currentRow, position: position, correctPosition: false)
         }
-        for position in 0..<blacks{
+        
+        for position in whites..<(blacks+whites){
             createResponse(row: currentRow, position: position, correctPosition: true)
         }
+        
         print("\(whites) - \(blacks)")
+        if(blacks == pinNumber){
+            self.removeAllChildren()
+            gameOver = true
+            let gameOver = SKLabelNode(text: "You won!\nTap to play again.")
+            gameOver.fontName = "Rockwell"
+            gameOver.fontSize = 50.0
+            gameOver.fontColor = UIColor.white
+            gameOver.position = CGPoint(x: frame.midX, y: frame.midY)
+            gameOver.numberOfLines = 0
+            gameOver.preferredMaxLayoutWidth = frame.size.width*0.8
+            gameOver.horizontalAlignmentMode = .center
+            addChild(gameOver)
+            animate(label: gameOver)
+        }
+        if blacks != pinNumber, currentRow == rounds-1 {
+            self.removeAllChildren()
+            gameOver = true
+            let gameOver = SKLabelNode(text: "You lost!\nTap to play again.")
+            gameOver.fontName = "Rockwell"
+            gameOver.fontSize = 50.0
+            gameOver.fontColor = UIColor.white
+            gameOver.position = CGPoint(x: frame.midX, y: frame.midY)
+            gameOver.numberOfLines = 0
+            gameOver.preferredMaxLayoutWidth = frame.size.width*0.8
+            gameOver.horizontalAlignmentMode = .center
+            addChild(gameOver)
+            animate(label: gameOver)
+        }
     }
+    
+    func animate(label: SKLabelNode){
+        let scaleUp = SKAction.scale(to: 1.1, duration: 0.5)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
+        let sequence = SKAction.sequence([scaleUp, scaleDown])
+        label.run(SKAction.repeatForever(sequence))
+    }
+    
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let location = touch.location(in: self)
-            for node in colorPickNodes{
-                if node.contains(location) {
-                    if let n = node.copy() as? SKShapeNode{
-                        movableColor = n
-                        movableColor!.position = location
-                        addChild(movableColor)
+            if gameOver{
+                self.removeAllChildren()
+                currentRandomColors = randomColors(number: pinNumber, colors: colors)
+                layoutScene()
+            } else {
+                for node in colorPickNodes{
+                    if node.contains(location) {
+                        if let n = node.copy() as? SKShapeNode{
+                            movableColor = n
+                            movableColor!.position = location
+                            addChild(movableColor)
+                        }
+                        
                     }
-                    
                 }
             }
         }
@@ -260,6 +308,7 @@ class GameScene: SKScene {
                 if node.contains(touch.location(in: self)){
                     node.strokeColor = UIColor.clear
                     node.fillColor = movableColor.fillColor
+                    node.name = movableColor.name
                     break
                 }
             }
@@ -269,7 +318,9 @@ class GameScene: SKScene {
             
             if checkCurrentNodesIsFilled() {
                 getResponse()
-                nextRound()
+                if(currentRow < rounds-1){
+                    nextRound()
+                }
             }
         }
     }
