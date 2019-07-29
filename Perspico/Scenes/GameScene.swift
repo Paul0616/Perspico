@@ -11,8 +11,23 @@ import SpriteKit
 
 class GameScene: SKScene {
     
-    let colors = [UIColor.yellow , UIColor.red , UIColor.purple, UIColor.green, UIColor.brown, UIColor.orange]
-    let colorNames = ["yellow", "red", "purple", "green", "brown", "orange"]
+    let colors6: [ColorModel] = [
+        ColorModel(colorName: "yellow", color: UIColor.yellow ),
+        ColorModel(colorName: "red", color: UIColor.red ),
+        ColorModel(colorName: "purple", color: UIColor.purple ),
+        ColorModel(colorName: "green", color: UIColor.green),
+        ColorModel(colorName: "brown", color: UIColor.brown ),
+        ColorModel(colorName: "orange", color: UIColor.orange )
+    ]
+    let colors7: [ColorModel] = [
+        ColorModel(colorName: "yellow", color: UIColor.yellow ),
+        ColorModel(colorName: "red", color: UIColor.red ),
+        ColorModel(colorName: "purple", color: UIColor.purple ),
+        ColorModel(colorName: "green", color: UIColor.green),
+        ColorModel(colorName: "brown", color: UIColor.brown ),
+        ColorModel(colorName: "orange", color: UIColor.orange ),
+        ColorModel(colorName: "blue", color: UIColor.blue )
+    ]
     var colorPickNodes: [SKShapeNode] = []
     var currentPlayerNodes: [SKShapeNode] = []
     var movableColor: SKShapeNode!
@@ -26,7 +41,12 @@ class GameScene: SKScene {
    // var boardHorizontalLines:[SKShapeNode]!
     override func didMove(to view: SKView) {
         backgroundColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
-       currentRandomColors = randomColors(number: pinNumber, colors: colors)
+        if pinNumber == 4 {
+            currentRandomColors = randomColors(number: pinNumber, colors: colors6)
+        }
+        if pinNumber == 5 {
+            currentRandomColors = randomColors(number: pinNumber, colors: colors7)
+        }
        layoutScene()
         roundTimeStart = getTime()
         
@@ -88,15 +108,22 @@ class GameScene: SKScene {
         
         let rowSize = getRowSize()
         var index = 0
-        for color in colors{
+        var colors_used: [ColorModel]!
+        if pinNumber == 4{
+            colors_used = self.colors6
+        }
+        if pinNumber == 5{
+            colors_used = self.colors7
+        }
+        for color in colors_used {
             let pickCircle = SKShapeNode(circleOfRadius: getPlayerCircleRadius(rowSize: rowSize))
             pickCircle.strokeColor = UIColor.clear
-            pickCircle.fillColor = color
+            pickCircle.fillColor = color.color
             let i = 2*index + 1
-            let x = offset + CGFloat(i)*(rowSize.width/CGFloat(colors.count)/2)
+            let x = offset + CGFloat(i)*(rowSize.width/CGFloat(colors_used.count)/2)
             let y = offset + CGFloat(rounds) * rowSize.height + rowSize.height/2
             pickCircle.position = CGPoint(x: x, y: y)
-            pickCircle.name = colorNames[index]
+            pickCircle.name = color.colorName
             
             UIGraphicsBeginImageContextWithOptions(rowSize, true, 1.0)
             let context = UIGraphicsGetCurrentContext()!// UIGraphicsGetCurrentContext()
@@ -157,14 +184,16 @@ class GameScene: SKScene {
     
     
     func createResponse(row: Int, position: Int, correctPosition: Bool){
-        if pinNumber != 4 {
-            print("Pins must be equal with...\(pinNumber)")
-            return
-        } else {
+       
             let rowSize = getRowSize()
-            let responseCircle = SKShapeNode(circleOfRadius: getPlayerCircleRadius(rowSize: rowSize)/2)
-            let k = position/2*2 + 1
-            responseCircle.position = CGPoint(x: 2*offset + CGFloat(position%2+1)*rowSize.height/3, y: offset + CGFloat(rounds-row-1) * rowSize.height + CGFloat(k)*rowSize.height/4)
+            let responseCircle = SKShapeNode(circleOfRadius: getPlayerCircleRadius(rowSize: rowSize)/3)
+            if(position<4){
+                let k = position/2*2 + 1
+                responseCircle.position = CGPoint(x: 2*offset + CGFloat(position%2+1)*rowSize.height/3, y: offset + CGFloat(rounds-row-1) * rowSize.height + CGFloat(k)*rowSize.height/4)
+            }
+            if position==4{
+                responseCircle.position = CGPoint(x: 2*offset + rowSize.height/2, y: offset + CGFloat(rounds-row-1) * rowSize.height + rowSize.height/2)
+            }
             responseCircle.strokeColor = UIColor.clear
             if correctPosition {
                 responseCircle.fillColor = UIColor.black
@@ -172,11 +201,13 @@ class GameScene: SKScene {
                 responseCircle.fillColor = UIColor.white
             }
             responseCircle.alpha = 0
+            
             addChild(responseCircle)
             animate1(node: responseCircle, position: position)
-        }
-        
+       
     }
+    
+    
     
     func getPlayerCircleRadius(rowSize: CGSize)->CGFloat{
         return (rowSize.width - rowSize.height)/(CGFloat(pinNumber)*2 + 2)
@@ -193,16 +224,16 @@ class GameScene: SKScene {
         return boardSize
     }
     
-    func randomColors(number: Int, colors: [UIColor]) -> [ColorModel] {
+    func randomColors(number: Int, colors: [ColorModel]) -> [ColorModel] {
         var rand = [ColorModel]()
         guard number > 0 else { return rand }
         var remaining = colors
-        var names = colorNames
+        //var names = colorNames
         for _ in 0 ..< number {
             guard !remaining.isEmpty else { break }
             let randomIndex = Int(arc4random_uniform(UInt32(remaining.count)))
-            rand.append(ColorModel(colorName: names[randomIndex], color: remaining[randomIndex]))
-            names.remove(at: randomIndex)
+            rand.append(remaining[randomIndex])
+            //names.remove(at: randomIndex)
             remaining.remove(at: randomIndex)
         }
         return rand
@@ -237,8 +268,12 @@ class GameScene: SKScene {
    
     }
     
-    func addScoreLabel(score: Int){
+    func addScoreLabel(score: Int, isBonus: Bool){
+        if isBonus{
+    
+        } else {
         let addScore = SKLabelNode(text: "+\(score)")
+        }
         addScore.fontName = "Rockwell-Bold"
         addScore.fontSize = 60.0
         addScore.fontColor = UIColor.white
@@ -257,7 +292,7 @@ class GameScene: SKScene {
     func getResponse(){
         roundTimeStop = getTime()
         let t = roundTimeStop - roundTimeStart
-        addScoreLabel(score:Int(1/t*100))
+        addScoreLabel(score:Int(1/t*100), isBonus: false)
         score += Int(1/t*100)
         roundTimeStart = getTime()
         if let sc = scoreLabel {
@@ -298,10 +333,11 @@ class GameScene: SKScene {
         
         print("\(whites) - \(blacks)")
         if(blacks == pinNumber){
+            self.currentRow = 0
+            print(Int(CFloat(1/(self.currentRow+1))*500))
+            self.score += Int(CFloat(1/(self.currentRow+1))*500)
+            addScoreLabel(score: score, isBonus: true)
             run(SKAction.playSoundFileNamed("ta-da.mp3", waitForCompletion: true)) {
-                self.currentRow = 0
-                print(Int(CFloat(1/(self.currentRow+1))*500))
-                self.score += Int(CFloat(1/(self.currentRow+1))*500)
                 UserDefaults.standard.set("You won!\nTap to play again.", forKey: "MessageGameOver")
                 UserDefaults.standard.set(self.score, forKey: "Score")
                 if self.score > UserDefaults.standard.integer(forKey: "Highscore"){
