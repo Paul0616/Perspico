@@ -10,7 +10,8 @@
 		4007D32322E991DD00A7DEEA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4007D32222E991DD00A7DEEA /* Settings.swift */; };
 		4007D32522EAFD7300A7DEEA /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4007D32422EAFD7300A7DEEA /* ColorModel.swift */; };
 		4090835222EEC4600079FB4E /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4090835122EEC4600079FB4E /* MenuScene.swift */; };
-		DA6336A322EC436200A60F09 /* HICCUP.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA6336A222EC436200A60F09 /* HICCUP.mp3 */; };
+		40A2557422EF02440019BD06 /* game_over.wav in Resources */ = {isa = PBXBuildFile; fileRef = 40A2557322EF02430019BD06 /* game_over.wav */; };
+		40EB289A22EF0F23000E26DA /* ta-da.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 40EB289922EF0F23000E26DA /* ta-da.mp3 */; };
 		DA6336A522EC484400A60F09 /* pop1.wav in Resources */ = {isa = PBXBuildFile; fileRef = DA6336A422EC484400A60F09 /* pop1.wav */; };
 		DAB53CA922E86D110072074A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB53CA822E86D110072074A /* AppDelegate.swift */; };
 		DAB53CAF22E86D110072074A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB53CAE22E86D110072074A /* GameScene.swift */; };
@@ -24,7 +25,8 @@
 		4007D32222E991DD00A7DEEA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		4007D32422EAFD7300A7DEEA /* ColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorModel.swift; sourceTree = "<group>"; };
 		4090835122EEC4600079FB4E /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
-		DA6336A222EC436200A60F09 /* HICCUP.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = HICCUP.mp3; sourceTree = "<group>"; };
+		40A2557322EF02430019BD06 /* game_over.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = game_over.wav; sourceTree = "<group>"; };
+		40EB289922EF0F23000E26DA /* ta-da.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ta-da.mp3"; sourceTree = "<group>"; };
 		DA6336A422EC484400A60F09 /* pop1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pop1.wav; sourceTree = "<group>"; };
 		DAB53CA522E86D100072074A /* Perspico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Perspico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAB53CA822E86D110072074A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -93,8 +95,9 @@
 		DAB53CA722E86D100072074A /* Perspico */ = {
 			isa = PBXGroup;
 			children = (
+				40EB289922EF0F23000E26DA /* ta-da.mp3 */,
+				40A2557322EF02430019BD06 /* game_over.wav */,
 				DA6336A422EC484400A60F09 /* pop1.wav */,
-				DA6336A222EC436200A60F09 /* HICCUP.mp3 */,
 				4007D32122E991C300A7DEEA /* Template */,
 				4007D31E22E986AD00A7DEEA /* Controllers */,
 				4007D31D22E9869E00A7DEEA /* Scenes */,
@@ -165,9 +168,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA6336A522EC484400A60F09 /* pop1.wav in Resources */,
-				DA6336A322EC436200A60F09 /* HICCUP.mp3 in Resources */,
 				DAB53CB422E86D110072074A /* Main.storyboard in Resources */,
+				40EB289A22EF0F23000E26DA /* ta-da.mp3 in Resources */,
 				DAB53CB622E86D120072074A /* Assets.xcassets in Resources */,
+				40A2557422EF02440019BD06 /* game_over.wav in Resources */,
 				DAB53CB922E86D120072074A /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,6 +337,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 85TX4DE8AK;
 				INFOPLIST_FILE = Perspico/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -351,6 +356,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 85TX4DE8AK;
 				INFOPLIST_FILE = Perspico/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

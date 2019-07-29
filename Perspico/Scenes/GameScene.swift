@@ -29,6 +29,7 @@ class GameScene: SKScene {
        currentRandomColors = randomColors(number: pinNumber, colors: colors)
        layoutScene()
         roundTimeStart = getTime()
+        
     }
     
     func layoutScene(){
@@ -297,28 +298,31 @@ class GameScene: SKScene {
         
         print("\(whites) - \(blacks)")
         if(blacks == pinNumber){
-            print(Int(CFloat(1/(currentRow+1))*100))
-            score += Int(CFloat(1/(currentRow+1))*100)
-            UserDefaults.standard.set("You won!\nTap to play again.", forKey: "MessageGameOver")
-            UserDefaults.standard.set(score, forKey: "Score")
-            if score > UserDefaults.standard.integer(forKey: "Highscore"){
-                UserDefaults.standard.set(score, forKey: "Highscore")
+            run(SKAction.playSoundFileNamed("ta-da.mp3", waitForCompletion: true)) {
+                self.currentRow = 0
+                print(Int(CFloat(1/(self.currentRow+1))*500))
+                self.score += Int(CFloat(1/(self.currentRow+1))*500)
+                UserDefaults.standard.set("You won!\nTap to play again.", forKey: "MessageGameOver")
+                UserDefaults.standard.set(self.score, forKey: "Score")
+                if self.score > UserDefaults.standard.integer(forKey: "Highscore"){
+                    UserDefaults.standard.set(self.score, forKey: "Highscore")
+                }
+                let menuScene = MenuScene(size: self.view!.bounds.size)
+                self.view!.presentScene(menuScene)
             }
-            let menuScene = MenuScene(size: view!.bounds.size)
-            view!.presentScene(menuScene)
-
-            currentRow = 0
+            
         }
         if blacks != pinNumber, currentRow == rounds-1 {
-            UserDefaults.standard.set("You lost!\nTap to play again.", forKey: "MessageGameOver")
-            UserDefaults.standard.set(score, forKey: "Score")
-            if score > UserDefaults.standard.integer(forKey: "Highscore"){
-                UserDefaults.standard.set(score, forKey: "Highscore")
+            run(SKAction.playSoundFileNamed("game_over", waitForCompletion: true)) {
+                self.currentRow = 0
+                UserDefaults.standard.set("You lost!\nTap to play again.", forKey: "MessageGameOver")
+                UserDefaults.standard.set(self.score, forKey: "Score")
+                if self.score > UserDefaults.standard.integer(forKey: "Highscore"){
+                    UserDefaults.standard.set(self.score, forKey: "Highscore")
+                }
+                let menuScene = MenuScene(size: self.view!.bounds.size)
+                self.view!.presentScene(menuScene)
             }
-            let menuScene = MenuScene(size: view!.bounds.size)
-            view!.presentScene(menuScene)
-
-            currentRow = 0
         }
     }
 
