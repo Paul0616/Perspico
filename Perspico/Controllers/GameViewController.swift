@@ -15,8 +15,9 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-           
-           let scene = GameScene(size: view.bounds.size)//SKScene(fileNamed: "GameScene") {
+           UserDefaults.standard.set("Tap to play!", forKey: "MessageGameOver")
+            UserDefaults.standard.set(0, forKey: "Score")
+           let scene = MenuScene(size: view.bounds.size)//SKScene(fileNamed: "GameScene") {
                 // Set the scale mode to scale to fit the window
                 scene.scaleMode = .aspectFill
                 

@@ -18,19 +18,23 @@ class GameScene: SKScene {
     var movableColor: SKShapeNode!
     var currentRow: Int = 0
     var currentRandomColors: [ColorModel] = []
-    var gameOver: Bool = false
+    var roundTimeStart: CFloat = 0.0
+    var roundTimeStop: CFloat = 0.0
+    var score: Int = 0
+    var scoreLabel: SKLabelNode!
     
    // var boardHorizontalLines:[SKShapeNode]!
     override func didMove(to view: SKView) {
         backgroundColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
        currentRandomColors = randomColors(number: pinNumber, colors: colors)
        layoutScene()
+        roundTimeStart = getTime()
     }
     
     func layoutScene(){
-        gameOver = false
         createGameBoard()
         createPickColorsSection()
+        createScore()
 //        for position in 0..<pinNumber{
 //            createPlayerPins(row: 5, position: position, color: currentRandomColors[position].color)
 //        }
@@ -80,6 +84,7 @@ class GameScene: SKScene {
     }
     
     func createPickColorsSection(){
+        
         let rowSize = getRowSize()
         var index = 0
         for color in colors{
@@ -91,12 +96,35 @@ class GameScene: SKScene {
             let y = offset + CGFloat(rounds) * rowSize.height + rowSize.height/2
             pickCircle.position = CGPoint(x: x, y: y)
             pickCircle.name = colorNames[index]
+            
+            UIGraphicsBeginImageContextWithOptions(rowSize, true, 1.0)
+            let context = UIGraphicsGetCurrentContext()!// UIGraphicsGetCurrentContext()
+            let gradient = CAGradientLayer()
+            gradient.frame = CGRect(x: 0,y: 0,width: rowSize.width,height: rowSize.height)
+            gradient.colors = [SKColor.white.cgColor,SKColor.black.cgColor]
+            gradient.type = .radial
+            gradient.startPoint = CGPoint(x: 0.7, y: 0.2)
+            gradient.endPoint = CGPoint(x: 1 , y: 1)
+            gradient.render(in: context)
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            let texture = SKTexture(cgImage: (image?.cgImage)!)
+            pickCircle.fillTexture = texture
             colorPickNodes.append(pickCircle)
             addChild(pickCircle)
             index += 1
         }
     }
-    
+    func createScore(){
+        scoreLabel = SKLabelNode(text: "Score: \(score)")
+        scoreLabel.fontName = "AvenirNext-Bold"
+        scoreLabel.fontSize = 18
+        scoreLabel.fontColor = UIColor.white
+        scoreLabel.position = CGPoint(x: frame.minX + scoreLabel.frame.size.width/2 + offset, y: frame.maxY - scoreLabel.frame.size.height-offset)
+        
+        addChild(scoreLabel)
+    }
     
     func createPlayerPins(row: Int, position: Int, color: UIColor)->SKShapeNode!{
         //row = 0 => (rounds-1-row) => 6-1-0 = 5
@@ -142,7 +170,9 @@ class GameScene: SKScene {
             } else {
                 responseCircle.fillColor = UIColor.white
             }
+            responseCircle.alpha = 0
             addChild(responseCircle)
+            animate1(node: responseCircle, position: position)
         }
         
     }
@@ -198,8 +228,40 @@ class GameScene: SKScene {
             }
         }
     }
+    func getTime()->CFloat{
+        let hh2 = (Calendar.current.component(.hour, from: Date()))
+        let mm2 = (Calendar.current.component(.minute, from: Date()))
+        let ss2 = (Calendar.current.component(.second, from: Date()))
+        return CFloat(hh2)*3600.0 + CFloat(mm2)*60.0 + CFloat(ss2)
+   
+    }
+    
+    func addScoreLabel(score: Int){
+        let addScore = SKLabelNode(text: "+\(score)")
+        addScore.fontName = "Rockwell-Bold"
+        addScore.fontSize = 60.0
+        addScore.fontColor = UIColor.white
+        addScore.position = CGPoint(x: frame.midX, y: frame.midY)
+
+        addChild(addScore)
+    
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
+        let fadeout = SKAction.fadeOut(withDuration: 0.5)
+        let sequence = SKAction.sequence([scaleDown, fadeout])
+        addScore.run(SKAction.repeat(sequence, count: 1), completion: {() -> Void in
+            addScore.removeFromParent()
+        })
+    }
     
     func getResponse(){
+        roundTimeStop = getTime()
+        let t = roundTimeStop - roundTimeStart
+        addScoreLabel(score:Int(1/t*100))
+        score += Int(1/t*100)
+        roundTimeStart = getTime()
+        if let sc = scoreLabel {
+            sc.text = "Score \(score)"
+        }
         var whites = 0
         var blacks = 0
         var i = 0
@@ -207,8 +269,10 @@ class GameScene: SKScene {
         for nodePlayer in currentPlayerNodes {
             //print(nodePlayer.name!)
             for nodeRandom in currentRandomColors {
-                if nodePlayer.fillColor == nodeRandom.color {
-                    
+                let nameColorRandom = nodeRandom.colorName
+                let nameColorPlayer = nodePlayer.name!
+                if nameColorPlayer == nameColorRandom {//nodePlayer.fillColor == nodeRandom.color {
+                    print("\(String(describing: nodePlayer.name)) == \(nodeRandom.colorName)")
                     if i == j {
                         print("\(i) - \(nodeRandom.colorName)")
                        blacks += 1
@@ -233,67 +297,66 @@ class GameScene: SKScene {
         
         print("\(whites) - \(blacks)")
         if(blacks == pinNumber){
-            self.removeAllChildren()
-            gameOver = true
-            let gameOver = SKLabelNode(text: "You won!\nTap to play again.")
-            gameOver.fontName = "Rockwell"
-            gameOver.fontSize = 50.0
-            gameOver.fontColor = UIColor.white
-            gameOver.position = CGPoint(x: frame.midX, y: frame.midY)
-            gameOver.numberOfLines = 0
-            gameOver.preferredMaxLayoutWidth = frame.size.width*0.8
-            gameOver.horizontalAlignmentMode = .center
-            addChild(gameOver)
-            animate(label: gameOver)
+            print(Int(CFloat(1/(currentRow+1))*100))
+            score += Int(CFloat(1/(currentRow+1))*100)
+            UserDefaults.standard.set("You won!\nTap to play again.", forKey: "MessageGameOver")
+            UserDefaults.standard.set(score, forKey: "Score")
+            if score > UserDefaults.standard.integer(forKey: "Highscore"){
+                UserDefaults.standard.set(score, forKey: "Highscore")
+            }
+            let menuScene = MenuScene(size: view!.bounds.size)
+            view!.presentScene(menuScene)
+
+            currentRow = 0
         }
         if blacks != pinNumber, currentRow == rounds-1 {
-            self.removeAllChildren()
-            gameOver = true
-            let gameOver = SKLabelNode(text: "You lost!\nTap to play again.")
-            gameOver.fontName = "Rockwell"
-            gameOver.fontSize = 50.0
-            gameOver.fontColor = UIColor.white
-            gameOver.position = CGPoint(x: frame.midX, y: frame.midY)
-            gameOver.numberOfLines = 0
-            gameOver.preferredMaxLayoutWidth = frame.size.width*0.8
-            gameOver.horizontalAlignmentMode = .center
-            addChild(gameOver)
-            animate(label: gameOver)
+            UserDefaults.standard.set("You lost!\nTap to play again.", forKey: "MessageGameOver")
+            UserDefaults.standard.set(score, forKey: "Score")
+            if score > UserDefaults.standard.integer(forKey: "Highscore"){
+                UserDefaults.standard.set(score, forKey: "Highscore")
+            }
+            let menuScene = MenuScene(size: view!.bounds.size)
+            view!.presentScene(menuScene)
+
+            currentRow = 0
         }
     }
+
     
-    func animate(label: SKLabelNode){
-        let scaleUp = SKAction.scale(to: 1.1, duration: 0.5)
-        let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
-        let sequence = SKAction.sequence([scaleUp, scaleDown])
-        label.run(SKAction.repeatForever(sequence))
+    func animate1(node: SKNode, position: Int){
+        let sound = SKAction.playSoundFileNamed("pop1.wav", waitForCompletion: false)
+        let delayAction = SKAction.wait(forDuration: TimeInterval(position)*0.2)
+        let scaleUp = SKAction.scale(to: 1.3, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+        let fadein = SKAction.fadeIn(withDuration: 0.2)
+        let sequence = SKAction.sequence([delayAction, sound, fadein, scaleUp, scaleDown ])
+        node.run(SKAction.repeat(sequence, count: 1))
     }
-    
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let location = touch.location(in: self)
-            if gameOver{
-                self.removeAllChildren()
-                currentRandomColors = randomColors(number: pinNumber, colors: colors)
-                layoutScene()
-            } else {
+
                 for node in colorPickNodes{
-                    if node.contains(location) {
+                    if node.contains(location), movableColor == nil {
                         if let n = node.copy() as? SKShapeNode{
+                            print("START drag")
                             movableColor = n
                             movableColor!.position = location
                             addChild(movableColor)
                         }
-                        
                     }
                 }
-            }
         }
     }
+        
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if touches.first != nil {
+            if movableColor != nil{
+                movableColor.removeFromParent()
+            }
             movableColor = nil
+            print("STOP - cancel drag")
         }
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -309,16 +372,20 @@ class GameScene: SKScene {
                     node.strokeColor = UIColor.clear
                     node.fillColor = movableColor.fillColor
                     node.name = movableColor.name
-                    break
+                } else {
+                    if node.name == movableColor.name {
+                        node.strokeColor = UIColor.white
+                        node.fillColor = UIColor.clear
+                    }
                 }
             }
             movableColor!.position = touch.location(in: self)
             movableColor.removeFromParent()
             movableColor = nil
-            
+            print("STOP - end drag")
             if checkCurrentNodesIsFilled() {
                 getResponse()
-                if(currentRow < rounds-1){
+                if currentRow < rounds-1 {
                     nextRound()
                 }
             }
