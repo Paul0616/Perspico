@@ -43,6 +43,8 @@ class MenuScene: SKScene {
         
         addChild(score)
         
+        let medium = SKNode()
+        //medium
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
