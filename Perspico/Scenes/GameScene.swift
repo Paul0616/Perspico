@@ -269,11 +269,10 @@ class GameScene: SKScene {
     }
     
     func addScoreLabel(score: Int, isBonus: Bool){
-        if isBonus{
-    
-        } else {
-        let addScore = SKLabelNode(text: "+\(score)")
-        }
+        let prefix = isBonus ? "Bonus:+" : "+"
+        
+        let addScore = SKLabelNode(text: "\(prefix)\(score)")
+       
         addScore.fontName = "Rockwell-Bold"
         addScore.fontSize = 60.0
         addScore.fontColor = UIColor.white
