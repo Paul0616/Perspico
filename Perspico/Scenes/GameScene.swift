@@ -37,6 +37,7 @@ class GameScene: SKScene {
     var roundTimeStop: CFloat = 0.0
     var score: Int = 0
     var scoreLabel: SKLabelNode!
+   // let tap = UITapGestureRecognizer()
     
    // var boardHorizontalLines:[SKShapeNode]!
     override func didMove(to view: SKView) {
@@ -49,8 +50,24 @@ class GameScene: SKScene {
         }
        layoutScene()
         roundTimeStart = getTime()
-        
+//        tap.addTarget(self, action:#selector(GameScene.handleTapGesture(_:) ))
+//        tap.numberOfTouchesRequired = 1
+//        tap.numberOfTapsRequired = 2
+//        self.view!.addGestureRecognizer(tap)
     }
+    
+//    @objc func handleTapGesture(_ sender:UITapGestureRecognizer) {
+//        // do something here
+//        let point:CGPoint = sender.location(in: self.view)
+//        //print("\(point) and \(node.frame.contains(point)) - \(node.convert(point, to: <#T##SKNode#>)),\(node.frame.maxY)")
+//        print(nodes(at: point))
+//        for node in colorPickNodes{
+//
+//            if node.contains(sender.location(in: self.view)), movableColor == nil {
+//                print("Double tap \(node.name)")
+//            }
+//        }
+//    }
     
     func layoutScene(){
         createGameBoard()
@@ -124,6 +141,7 @@ class GameScene: SKScene {
             let y = offset + CGFloat(rounds) * rowSize.height + rowSize.height/2
             pickCircle.position = CGPoint(x: x, y: y)
             pickCircle.name = color.colorName
+            
             
             UIGraphicsBeginImageContextWithOptions(rowSize, true, 1.0)
             let context = UIGraphicsGetCurrentContext()!// UIGraphicsGetCurrentContext()
@@ -291,12 +309,12 @@ class GameScene: SKScene {
     func getResponse(){
         roundTimeStop = getTime()
         let t = roundTimeStop - roundTimeStart
-        addScoreLabel(score:Int(1/t*100), isBonus: false)
+        
         score += Int(1/t*100)
         roundTimeStart = getTime()
-        if let sc = scoreLabel {
-            sc.text = "Score \(score)"
-        }
+//        if let sc = scoreLabel {
+//            sc.text = "Score \(score)"
+//        }
         var whites = 0
         var blacks = 0
         var i = 0
@@ -331,11 +349,12 @@ class GameScene: SKScene {
         }
         
         print("\(whites) - \(blacks)")
-        if(blacks == pinNumber){
+        if blacks == pinNumber {
+            let f = CFloat(1/CFloat(self.currentRow+1))
+            print(Int(f*CFloat(pinNumber%3*200)))
+            self.score += Int(f*CFloat(pinNumber%3*200))
+            addScoreLabel(score: Int(f*CFloat(pinNumber%3*200)), isBonus: true)
             self.currentRow = 0
-            print(Int(CFloat(1/(self.currentRow+1))*500))
-            self.score += Int(CFloat(1/(self.currentRow+1))*500)
-            addScoreLabel(score: score, isBonus: true)
             run(SKAction.playSoundFileNamed("ta-da.mp3", waitForCompletion: true)) {
                 UserDefaults.standard.set("You won!\nTap to play again.", forKey: "MessageGameOver")
                 UserDefaults.standard.set(self.score, forKey: "Score")
@@ -346,18 +365,24 @@ class GameScene: SKScene {
                 self.view!.presentScene(menuScene)
             }
             
-        }
-        if blacks != pinNumber, currentRow == rounds-1 {
-            run(SKAction.playSoundFileNamed("game_over", waitForCompletion: true)) {
-                self.currentRow = 0
-                UserDefaults.standard.set("You lost!\nTap to play again.", forKey: "MessageGameOver")
-                UserDefaults.standard.set(self.score, forKey: "Score")
-                if self.score > UserDefaults.standard.integer(forKey: "Highscore"){
-                    UserDefaults.standard.set(self.score, forKey: "Highscore")
+        } else {
+            if currentRow == rounds-1 {
+                run(SKAction.playSoundFileNamed("game_over", waitForCompletion: true)) {
+                    self.currentRow = 0
+                    UserDefaults.standard.set("You lost!\nTap to play again.", forKey: "MessageGameOver")
+                    UserDefaults.standard.set(self.score, forKey: "Score")
+                    if self.score > UserDefaults.standard.integer(forKey: "Highscore"){
+                        UserDefaults.standard.set(self.score, forKey: "Highscore")
+                    }
+                    let menuScene = MenuScene(size: self.view!.bounds.size)
+                    self.view!.presentScene(menuScene)
                 }
-                let menuScene = MenuScene(size: self.view!.bounds.size)
-                self.view!.presentScene(menuScene)
+            } else {
+                addScoreLabel(score:Int(1/t*100), isBonus: false)
             }
+        }
+        if let sc = scoreLabel {
+            sc.text = "Score \(score)"
         }
     }
 
@@ -375,10 +400,11 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let location = touch.location(in: self)
-
+            if(touch.tapCount == 1){
                 for node in colorPickNodes{
                     if node.contains(location), movableColor == nil {
                         if let n = node.copy() as? SKShapeNode{
+                            print(touch.tapCount)
                             print("START drag")
                             movableColor = n
                             movableColor!.position = location
@@ -386,6 +412,10 @@ class GameScene: SKScene {
                         }
                     }
                 }
+            }
+            if(touch.tapCount == 2){
+                print("DOUBLE")
+            }
         }
     }
         

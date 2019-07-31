@@ -9,5 +9,5 @@
 import SpriteKit
 
 let offset: CGFloat = 10
-let rounds = 9
-let pinNumber = 5
+var rounds = 6
+var pinNumber = 4

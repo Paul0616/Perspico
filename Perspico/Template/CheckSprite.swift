@@ -15,11 +15,10 @@ class CheckSprite: SKSpriteNode {
     
     var isChecked: Bool = true {
         didSet {
-            //if checkedTexture != nil {
-                texture = isChecked ? checkedTexture : uncheckedTexture
+            color = .clear
+            texture = isChecked ? checkedTexture : uncheckedTexture
             color = .white
             colorBlendFactor = 1.0
-         //   }
         }
     }
     
@@ -31,15 +30,13 @@ class CheckSprite: SKSpriteNode {
     
     
    init(checkedTexture: SKTexture!, uncheckedTexture: SKTexture!){
+        self.checkedTexture = checkedTexture
+        self.uncheckedTexture = uncheckedTexture
         let texture = self.isChecked ? checkedTexture : uncheckedTexture
         super.init(texture: texture, color: UIColor.white, size: texture!.size())
-        //color = UIColor.white
-        //colorBlendFactor = 1.0
-        
-        
     }
-    func setChecked(isChecked: Bool){
-        self.isChecked = isChecked
-        //texture = isChecked ? checkedTexture : uncheckedTexture
-    }
+//    func setChecked(isChecked: Bool){
+//        self.isChecked = isChecked
+//        //texture = isChecked ? checkedTexture : uncheckedTexture
+//    }
 }
