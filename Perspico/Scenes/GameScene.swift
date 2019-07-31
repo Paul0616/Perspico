@@ -37,9 +37,7 @@ class GameScene: SKScene {
     var roundTimeStop: CFloat = 0.0
     var score: Int = 0
     var scoreLabel: SKLabelNode!
-   // let tap = UITapGestureRecognizer()
-    
-   // var boardHorizontalLines:[SKShapeNode]!
+  
     override func didMove(to view: SKView) {
         backgroundColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
         if pinNumber == 4 {
@@ -50,24 +48,9 @@ class GameScene: SKScene {
         }
        layoutScene()
         roundTimeStart = getTime()
-//        tap.addTarget(self, action:#selector(GameScene.handleTapGesture(_:) ))
-//        tap.numberOfTouchesRequired = 1
-//        tap.numberOfTapsRequired = 2
-//        self.view!.addGestureRecognizer(tap)
+
     }
     
-//    @objc func handleTapGesture(_ sender:UITapGestureRecognizer) {
-//        // do something here
-//        let point:CGPoint = sender.location(in: self.view)
-//        //print("\(point) and \(node.frame.contains(point)) - \(node.convert(point, to: <#T##SKNode#>)),\(node.frame.maxY)")
-//        print(nodes(at: point))
-//        for node in colorPickNodes{
-//
-//            if node.contains(sender.location(in: self.view)), movableColor == nil {
-//                print("Double tap \(node.name)")
-//            }
-//        }
-//    }
     
     func layoutScene(){
         createGameBoard()
@@ -415,6 +398,27 @@ class GameScene: SKScene {
             }
             if(touch.tapCount == 2){
                 print("DOUBLE")
+                var selectedNode: SKShapeNode!
+                for node in colorPickNodes{
+                    if node.contains(location){
+                        selectedNode = node
+                        break
+                    }
+                }
+                for node in currentPlayerNodes {
+                    if node.strokeColor == UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), selectedNode != nil {
+                        node.strokeColor = UIColor.clear
+                        node.fillColor = selectedNode.fillColor
+                        node.name = selectedNode.name
+                        break
+                    }
+                }
+                if checkCurrentNodesIsFilled() {
+                    getResponse()
+                    if currentRow < rounds-1 {
+                        nextRound()
+                    }
+                }
             }
         }
     }

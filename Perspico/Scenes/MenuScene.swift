@@ -55,6 +55,10 @@ class MenuScene: SKScene {
         } else {
             medium.isChecked = true
         }
+        if medium.isChecked {
+            pinNumber = 4
+            rounds = 6
+        }
         addChild(medium)
     
         let labelMedium = SKLabelNode(fontNamed: "Rockwell")
@@ -72,6 +76,10 @@ class MenuScene: SKScene {
             hard.isChecked = difficulty == "hard" ? true : false
         } else {
             hard.isChecked = false
+        }
+        if hard.isChecked {
+            pinNumber = 5
+            rounds = 9
         }
         addChild(hard)
         
